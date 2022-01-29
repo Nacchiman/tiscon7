@@ -1,5 +1,9 @@
 package com.tiscon.dto;
 
+import com.tiscon.validator.Numeric;
+
+import javax.validation.constraints.NotBlank;
+
 public class UserOrderDto {
 
     private String customerName;
@@ -25,6 +29,10 @@ public class UserOrderDto {
     private String washingMachine;
 
     private boolean washingMachineInstallation;
+
+    private String monthMoving;
+
+    private String dayMoving;
 
     public String getCustomerName() {
         return customerName;
@@ -120,5 +128,21 @@ public class UserOrderDto {
 
     public void setWashingMachineInstallation(Boolean washingMachineInstallation) {
         this.washingMachineInstallation = washingMachineInstallation;
+    }
+
+    public int getMonthMoving() {
+        return Integer.parseInt(monthMoving);
+    }
+
+    public void setMonthMoving(String monthMoving) {
+        this.monthMoving = monthMoving;
+    }
+
+    public int getDayMoving() {
+        return Integer.parseInt(dayMoving);
+    }
+
+    public void setDayMoving(String dayMoving) {
+        this.dayMoving = dayMoving;
     }
 }

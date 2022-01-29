@@ -22,7 +22,9 @@ import java.util.List;
 @Service
 public class EstimateService {
 
-    /** 引越しする距離の1 kmあたりの料金[円] */
+    /**
+     * 引越しする距離の1 kmあたりの料金[円]
+     */
     private static final int PRICE_PER_DISTANCE = 100;
 
     private final EstimateDao estimateDAO;
@@ -77,6 +79,7 @@ public class EstimateService {
         // 距離当たりの料金を算出する
         int priceForDistance = distanceInt * PRICE_PER_DISTANCE;
 
+        // 箱の数を見積もり(データベース内にそれぞれ定義)
         int boxes = getBoxForPackage(dto.getBox(), PackageType.BOX)
                 + getBoxForPackage(dto.getBed(), PackageType.BED)
                 + getBoxForPackage(dto.getBicycle(), PackageType.BICYCLE)
@@ -92,7 +95,10 @@ public class EstimateService {
             priceForOptionalService = estimateDAO.getPricePerOptionalService(OptionalServiceType.WASHING_MACHINE.getCode());
         }
 
-        return priceForDistance + pricePerTruck + priceForOptionalService;
+        // 季節に応じて季節係数
+        double seasonRate = estimateDAO.getSeasonRate(dto.getMonthMoving());
+
+        return (int) ((priceForDistance + pricePerTruck) * seasonRate + priceForOptionalService);
     }
 
     /**
