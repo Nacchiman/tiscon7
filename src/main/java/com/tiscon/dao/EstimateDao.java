@@ -9,6 +9,7 @@ import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
+import java.util.Objects;
 
 /**
  * 引越し見積もり機能においてDBとのやり取りを行うクラス。
@@ -96,15 +97,27 @@ public class EstimateDao {
                 "SELECT PREFECTURE_ID_TO PREFECTURE_ID_FROM ,PREFECTURE_ID_FROM PREFECTURE_ID_TO ,DISTANCE FROM PREFECTURE_DISTANCE) " +
                 "WHERE PREFECTURE_ID_FROM  = :prefectureIdFrom AND PREFECTURE_ID_TO  = :prefectureIdTo";
 
+        String sql2 = "SELECT DISTANCE FROM (" +
+                "SELECT PREFECTURE_ID_FROM ,PREFECTURE_ID_TO ,DISTANCE FROM PREFECTURE_DISTANCE) " +
+                "WHERE PREFECTURE_ID_FROM  = :prefectureIdFrom AND PREFECTURE_ID_TO  = :prefectureIdTo";
+
         PrefectureDistance prefectureDistance = new PrefectureDistance();
         prefectureDistance.setPrefectureIdFrom(prefectureIdFrom);
         prefectureDistance.setPrefectureIdTo(prefectureIdTo);
 
         double distance;
-        try {
-            distance = parameterJdbcTemplate.queryForObject(sql, new BeanPropertySqlParameterSource(prefectureDistance), double.class);
-        } catch (IncorrectResultSizeDataAccessException e) {
-            distance = 0;
+        if (Objects.equals(prefectureIdFrom, prefectureIdTo)){
+            try {
+                distance = parameterJdbcTemplate.queryForObject(sql2, new BeanPropertySqlParameterSource(prefectureDistance), double.class);
+            } catch (IncorrectResultSizeDataAccessException e) {
+                distance = 0;
+            }
+        }else {
+            try {
+                distance = parameterJdbcTemplate.queryForObject(sql, new BeanPropertySqlParameterSource(prefectureDistance), double.class);
+            } catch (IncorrectResultSizeDataAccessException e) {
+                distance = 0;
+            }
         }
         return distance;
     }
